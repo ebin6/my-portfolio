@@ -9,10 +9,42 @@ export function ContactSection() {
   const { toast } = useToast();
   const [formData, setFormData] = useState({ name: "", email: "", message: "" });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [submitting, setSubmitting] = useState(false);
+
+  const GOOGLE_FORM_URL =
+    "https://docs.google.com/forms/u/0/d/e/1FAIpQLScQGYToFjZjG75Rr07Y_tam2mN1Q7uc-idpRxXlDkAfdyYKdQ/formResponse";
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({ title: "Message sent!", description: "Thanks for reaching out. I'll get back to you soon." });
-    setFormData({ name: "", email: "", message: "" });
+    setSubmitting(true);
+    try {
+      const body = new FormData();
+      body.append("entry.1222672494", formData.name);
+      body.append("entry.1307432019", formData.email);
+      body.append("entry.576013532", formData.message);
+
+      // Google Forms doesn't return CORS headers, so use no-cors.
+      // The request still reaches Google and the response is recorded.
+      await fetch(GOOGLE_FORM_URL, {
+        method: "POST",
+        mode: "no-cors",
+        body,
+      });
+
+      toast({
+        title: "Message sent!",
+        description: "Thanks for reaching out. I'll get back to you soon.",
+      });
+      setFormData({ name: "", email: "", message: "" });
+    } catch (err) {
+      toast({
+        title: "Something went wrong",
+        description: "Please try again in a moment.",
+        variant: "destructive",
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -53,17 +85,14 @@ export function ContactSection() {
             </div>
 
             {/* Form */}
-            <form action="https://docs.google.com/forms/u/0/d/e/1FAIpQLScQGYToFjZjG75Rr07Y_tam2mN1Q7uc-idpRxXlDkAfdyYKdQ/formResponse" onSubmit={handleSubmit} className="space-y-4" method="post">
-            
+            <form onSubmit={handleSubmit} className="space-y-4">
               <Input
                 placeholder="Your Name"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 required
                 className="bg-card"
-                name="entry.1222672494"
               />
-              
               <Input
                 type="email"
                 placeholder="Your Email"
@@ -71,9 +100,7 @@ export function ContactSection() {
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 required
                 className="bg-card"
-                name="entry.1307432019"
               />
-
               <Textarea
                 placeholder="Your Message"
                 rows={5}
@@ -81,12 +108,10 @@ export function ContactSection() {
                 onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                 required
                 className="bg-card resize-none"
-                name="entry.576013532"
               />
-
-              <Button type="submit" className="w-full gradient-bg hover:opacity-90">
+              <Button type="submit" disabled={submitting} className="w-full gradient-bg hover:opacity-90">
                 <Send className="h-4 w-4 mr-2" />
-                Send Message
+                {submitting ? "Sending..." : "Send Message"}
               </Button>
             </form>
           </div>
