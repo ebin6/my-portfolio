@@ -53,14 +53,17 @@ export function ContactSection() {
             </div>
 
             {/* Form */}
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form action="https://docs.google.com/forms/u/0/d/e/1FAIpQLScQGYToFjZjG75Rr07Y_tam2mN1Q7uc-idpRxXlDkAfdyYKdQ/formResponse" onSubmit={handleSubmit} className="space-y-4" method="post">
+            
               <Input
                 placeholder="Your Name"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 required
                 className="bg-card"
+                name="entry.1222672494"
               />
+              
               <Input
                 type="email"
                 placeholder="Your Email"
@@ -68,7 +71,9 @@ export function ContactSection() {
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 required
                 className="bg-card"
+                name="entry.1307432019"
               />
+
               <Textarea
                 placeholder="Your Message"
                 rows={5}
@@ -76,7 +81,9 @@ export function ContactSection() {
                 onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                 required
                 className="bg-card resize-none"
+                name="entry.576013532"
               />
+
               <Button type="submit" className="w-full gradient-bg hover:opacity-90">
                 <Send className="h-4 w-4 mr-2" />
                 Send Message
